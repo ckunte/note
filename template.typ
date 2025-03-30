@@ -32,38 +32,33 @@
     },
 
     header: context {
-    // set custom header: make title appear on even pages
+      // set custom header: make title appear on even pages
       if calc.even(counter(page).get().first()) { 
         emph(title) 
       } else { none }
 
-    //// set custom header: make title appear on odd pages other than the first
-    //  if counter(page).get().first() > 1 and calc.odd(counter(page).get().first()) {
-    //   emph(title) 
-    //  } else { none }
+      //// set custom header: make title appear on odd pages other than the first
+      //  if counter(page).get().first() > 1 and calc.odd(counter(page).get().first()) {
+      //   emph(title) 
+      //  } else { none }
 
-    // make section appear on odd pages other than the first
-    let page-num = counter(page).get().first()
-    if page-num > 1 and calc.odd(page-num) {
-      let headings = query(heading)
-      let curr-heading = none
-      let found = false
+      // make section appear on odd pages other than the first
+      let page-num = counter(page).get().first()
+      if page-num > 1 and calc.odd(page-num) {
+        let headings = query(heading)
+        let curr-heading = none
+        let found = false
 
-      for heading-elem in headings {
-        if heading-elem.location() != none and heading-elem.location().page() == page-num {
-          curr-heading = heading-elem.body
-          found = true
-        } else if heading-elem.location() != none and heading-elem.location().page() < page-num {
-          curr-heading = heading-elem.body // keep track of the last heading on a prev page
-        } else if found {
-          break // stop once we have moved past the curr page
+        for heading-elem in headings {
+          if heading-elem.location() != none and heading-elem.location().page() == page-num {
+            curr-heading = heading-elem.body
+            found = true
+          } else if heading-elem.location() != none and heading-elem.location().page() < page-num {
+            curr-heading = heading-elem.body // keep track of the last heading on a prev page
+          } else if found { break } // stop once we have moved past the curr page
         }
-      }
-      align(right, emph(curr-heading))
-    } else {
-      none
-    }    
-    // test area
+        align(right, emph(curr-heading))
+      } else { none }    
     }, // context ends
   )
 
@@ -74,7 +69,7 @@
     bottom-edge: "baseline",
     number-type: "old-style",
     size: if paper == "a5" { 11pt } else { 12pt },
-    )
+  )
 
   // small caps
   let sc(content) = text(features: ("c2sc",))[#content]
@@ -109,11 +104,28 @@
 
   // equation numbers
   set math.equation(numbering: "(1)")
- 
+  // show math.equation: set block(spacing: 0.65em)
+  // // Configure appearance of equation references
+  // show ref: it => {
+  //   if it.element != none and it.element.func() == math.equation {
+  //     // Override equation references.
+  //     link(it.element.location(), numbering(
+  //       it.element.numbering,
+  //       ..counter(math.equation).at(it.element.location())
+  //     ))
+  //   } else {
+  //     // Other references as usual.
+  //     it
+  //   }
+  // }
+
    // link properties
   show cite: set text(fill: maroon) // set cite colour
   show link: set text(fill: rgb(0, 0, 255)) // set link colour
   show link: underline
+
+  // colour terms
+  show regex("tb[a,c,d,u]"): set text(fill: red, style: "italic") // for to-be-[added/advised, confirmed, determined, updated]
 
   // block quote properties
   set quote(block: true)
