@@ -1,12 +1,12 @@
-// Template for technical note (or paper)
-// Available from https://github.com/ckunte/note
+// Template for technical note (or paper) github.com/ckunte/note
+// Download with: curl -LJO <url>
 // 2025 C Kunte
 #let note(
   // title of note (or paper)
-  title: [Note title],
+  title: none,
 
   // author of the note (or paper)
-  author: "Author",
+  author: none,
 
   // paper size:
   paper: "a4",
@@ -103,7 +103,7 @@
   show figure.caption: emph
 
   // equation numbers
-  set math.equation(numbering: "(1)")
+  // // set math.equation(numbering: "(1)")
   // show math.equation: set block(spacing: 0.65em)
   // // Configure appearance of equation references
   // show ref: it => {
@@ -121,6 +121,7 @@
 
    // link properties
   show cite: set text(fill: maroon) // set cite colour
+  show ref: set text(fill: rgb(0, 0, 128)) // set reference colour
   show link: set text(fill: rgb(0, 0, 255)) // set link colour
   show link: underline
 
@@ -133,7 +134,7 @@
 
   // print title block (includes title, author, and date)
   align(center)[
-    #text(2em)[*#title*]
+    #text(1.8em)[*#title*]
     #v(2em, weak: true)
     #text(1em, author)
     #v(1em, weak: true)

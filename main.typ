@@ -1,5 +1,5 @@
-// This file is the main document file that relies on template.typ for
-// settings, which is available from https://github.com/ckunte/note
+// This is the main file that relies on template.typ for
+// settings; available from https://github.com/ckunte/note
 // 2025 C Kunte
 #import "template.typ": *
 #show: note.with(
@@ -17,7 +17,10 @@
 
   // consider setting heading numbers here-on
   #set heading(numbering: "1.1") 
+
 */
+#v(3em)
+
 #outline(
   indent: 1em, 
   depth: 4,
@@ -35,6 +38,8 @@
 
 // consider setting heading numbers here-on
 #set heading(numbering: "1.1")
+
+#v(3em)
 
 = Introduction
 
