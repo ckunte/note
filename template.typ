@@ -1,6 +1,8 @@
-// Template for technical note (or paper) github.com/ckunte/note
-// Download with: curl -LJO <url>
-// 2025 C Kunte
+/*
+  Template for technical note (or paper)
+  https://github.com/ckunte/note
+  2025 C Kunte
+*/
 #let note(
   // title of note (or paper)
   title: none,
@@ -9,7 +11,7 @@
   author: none,
 
   // paper size:
-  paper: "a4",
+  paper: none,
 
   // content of the note (or paper)
   body,
