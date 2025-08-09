@@ -4,8 +4,14 @@
   2025 C Kunte
 */
 #let note(
+  // logo (optional)
+  logo: none,
+
   // title of note (or paper)
   title: none,
+
+  // subtitle
+  subtitle: none,
 
   // author of the note (or paper)
   author: none,
@@ -134,16 +140,23 @@
   set quote(block: true)
   show quote: set text(style: "italic")
 
-  // print title block (includes title, author, and date)
+  // print title block (includes logo, title, subtitle, author, and date)
   align(center)[
+    #if logo == "yes" {
+      image("logo.svg", height: 0.4in) // above the title
+      v(3em, weak: true)
+    }
     #text(1.8em)[*#title*]
+    #if subtitle != none {
+      v(1em, weak: true)
+      text(1em)[_ #subtitle _]
+    }
     #v(2em, weak: true)
     #text(1em, author)
     #v(1em, weak: true)
     #datetime.today().display("[month repr:long] [day], [year]")
     #v(5em, weak: true)
   ]
-
   // // numbering headings
   // set heading(numbering: "1.1") // set heading numbers here-on
 

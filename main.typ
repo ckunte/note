@@ -3,9 +3,11 @@
 // 2025 C Kunte
 #import "template.typ": *
 #show: note.with(
-  paper: "a4",
+  logo: "yes",
   title: [On-bottom stability],
+  subtitle: [Analysis philosophy],
   author: "C Kunte",
+  paper: "a4",
 )
 
 // content from here-on
@@ -19,27 +21,45 @@
   #set heading(numbering: "1.1") 
 
 */
-#v(3em)
+#pagebreak(weak: true)
 
 #outline(
   indent: 1em, 
   depth: 4,
 ) // toc
 
-#outline(
-  title: [List of figures],
-  target: figure.where(kind: image), 
-) // figures
+// figures and tables
+#context {
+  // Count the number of figures of kind "image"
+  let fig-count = query(figure.where(kind: image)).len()
+  let tbl-count = query(figure.where(kind: table)).len()
 
-#outline(
-  title: [List of tables],
-  target: figure.where(kind: table),
-) // tables
+  // Only render the outline if there are figures
+  if fig-count > 0 {
+    outline(
+      title: [List of Figures],
+      target: figure.where(kind: image),
+    )
+  }
+  // Only render the outline if there are tables
+  if tbl-count > 0 {
+    outline(
+      title: [List of Figures],
+      target: figure.where(kind: table),
+    )
+  }
+}
+
+#pagebreak(weak: true)
+
+= Summary
+
+#lorem(100)
+
+#pagebreak(weak: true)
 
 // consider setting heading numbers here-on
 #set heading(numbering: "1.1")
-
-#v(3em)
 
 = Introduction
 
