@@ -21,36 +21,8 @@
   #set heading(numbering: "1.1") 
 
 */
-#pagebreak(weak: true)
-
-#outline(
-  indent: 1em, 
-  depth: 4,
-) // toc
-
-// figures and tables
-#context {
-  // Count the number of figures of kind "image"
-  let fig-count = query(figure.where(kind: image)).len()
-  let tbl-count = query(figure.where(kind: table)).len()
-
-  // Only render the outline if there are figures
-  if fig-count > 0 {
-    outline(
-      title: [List of Figures],
-      target: figure.where(kind: image),
-    )
-  }
-  // Only render the outline if there are tables
-  if tbl-count > 0 {
-    outline(
-      title: [List of Figures],
-      target: figure.where(kind: table),
-    )
-  }
-}
-
-#pagebreak(weak: true)
+// TOC
+#include("toc.typ")
 
 = Summary
 
