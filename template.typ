@@ -1,116 +1,123 @@
 /*
   Template for technical note (or paper)
   https://github.com/ckunte/note
-  2025 C Kunte
+  2026 C Kunte
 */
+
 #let note(
-  // logo (optional)
   logo: none,
-
-  // title of note (or paper)
   title: none,
-
-  // subtitle
   subtitle: none,
-
-  // author of the note (or paper)
   author: none,
-
-  // paper size:
-  paper: none,
-
-  // content of the note (or paper)
+  paper: "a4",
   body,
 ) = {
-  // metadata for the note (or paper)
-  set document(title: title, author: author)
 
-  // page properties
-  set page(
-    paper: paper,
+  // ------------------------------------------------------------
+  // State: running header (level 1 heading)
+  // ------------------------------------------------------------
 
-    // page numbering style
-    numbering: "1", // alternately "1 of 1"
+  let h1-state = state("h1", none)
 
-    // set margins based on paper size
-    margin: if paper == "a5" {
-      (x: 0.75in, y: 0.75in, top: 0.9in)
-    } else {
-      (x: 1.0in, y: 1.0in, top: 1.25in)
-    },
-
-    header: context {
-      // set custom header: make title appear on even pages
-      if calc.even(counter(page).get().first()) { 
-        emph(title) 
-      } else { none }
-
-      //// set custom header: make title appear on odd pages other than the first
-      //  if counter(page).get().first() > 1 and calc.odd(counter(page).get().first()) {
-      //   emph(title) 
-      //  } else { none }
-
-      // make section appear on odd pages other than the first
-      let page-num = counter(page).get().first()
-      if page-num > 1 and calc.odd(page-num) {
-        let headings = query(heading)
-        let curr-heading = none
-        let found = false
-
-        for heading-elem in headings {
-          if heading-elem.location() != none and heading-elem.location().page() == page-num {
-            curr-heading = heading-elem.body
-            found = true
-          } else if heading-elem.location() != none and heading-elem.location().page() < page-num {
-            curr-heading = heading-elem.body // keep track of the last heading on a prev page
-          } else if found { break } // stop once we have moved past the curr page
-        }
-        align(right, emph(curr-heading))
-      } else { none }    
-    }, // context ends
-  )
-
-  // font properties
-  set text(
-    font: "Segoe UI", // e.g. "STIX Two Text" or "erewhon",
-    top-edge: "cap-height", 
-    bottom-edge: "baseline",
-    number-type: "old-style",
-    size: if paper == "a5" { 11pt } else { 12pt },
-  )
-
-  // small caps
-  let sc(content) = text(features: ("c2sc",))[#content]
-  show regex("[A-Z]{2,}"): match => {
-    sc(match)
+  show heading.where(level: 1): it => {
+    h1-state.update(it)
+    it
   }
 
-  // paragraph properties
-  set par(
-    spacing: 0.65em, 
-    leading: 0.65em, 
-    first-line-indent: 12pt, 
-    justify: true
+  // ------------------------------------------------------------
+  // Page setup (Typst handles margins internally)
+  // ------------------------------------------------------------
+
+  set page(
+    paper: paper,
+    numbering: "1",
+
+    header: context {
+      let page-num = counter(page).get().first()
+
+      if page-num <= 1 {
+        return
+      }
+
+      if calc.even(page-num) {
+        emph(title)
+      } else {
+        let current = h1-state.get()
+
+        if current != none {
+          align(right, emph(current.body))
+        }
+      }
+    },
   )
 
-  // raw text (or code)
-  show raw: set text(size: 7.5pt)
+  // ------------------------------------------------------------
+  // Typography
+  // ------------------------------------------------------------
 
-  // table properties
-  show figure.where(
-    kind: table
-  ): set figure.caption(position: top)
+  set text(
+    font: "Segoe UI",
+    size: if paper == "a5" { 10pt } else { 11pt },
+    top-edge: "cap-height",
+    bottom-edge: "baseline",
+    number-type: "old-style",
+  )
 
-  // table stroke and row height
+  set par(
+    spacing: 0.65em,
+    leading: 0.65em,
+    first-line-indent: 12pt,
+    justify: true,
+  )
+
+  // ------------------------------------------------------------
+  // Raw / code blocks
+  // ------------------------------------------------------------
+
+  show raw: set text(size: 8pt/*, font:"JetBrains Mono"*/)
+
+  show raw.where(block: true): it => {
+    set par(first-line-indent: 0pt)
+
+    block(
+      fill: luma(240),
+      inset: 10pt,
+      radius: 4pt,
+      width: 100%,
+      it,
+    )
+  }
+
+  show raw.where(block: false): it => box(
+      fill: luma(245),
+      stroke: 0.5pt + luma(200),
+      inset: (x: 3pt, y: 0pt),
+      outset: (x: -1pt, y: 3pt),
+      radius: 2pt,
+      it,
+    )
+
+  // ------------------------------------------------------------
+  // Small caps acronyms
+  // ------------------------------------------------------------
+
+  show regex("[A-Z]{2,}"): it => text(features: ("c2sc",))[#it]
+
+  // ------------------------------------------------------------
+  // Tables
+  // ------------------------------------------------------------
+
+  show figure.where(kind: table): set figure.caption(position: top)
+
   set table(
     stroke: none,
-    row-gutter: -0.5em
+    row-gutter: -0.5em,
   )
 
-  // emphasise caption
   show figure.caption: emph
 
-  // equation numbers
+  // Equation numbers
+  //
   // // set math.equation(numbering: "(1)")
   // show math.equation: set block(spacing: 0.65em)
   // // Configure appearance of equation references
@@ -127,53 +134,87 @@
   //   }
   // }
 
-   // link properties
-  show cite: set text(fill: maroon) // set cite colour
-  show ref: set text(fill: rgb(0, 0, 128)) // set reference colour
-  show link: set text(fill: rgb(0, 0, 255)) // set link colour
+  // ------------------------------------------------------------
+  // Links
+  // ------------------------------------------------------------
+
+  let colours = (
+    cite: maroon,
+    ref: rgb(0, 0, 128),
+    link: rgb(0, 0, 255),
+  )
+
+  show cite: set text(fill: colours.cite)
+  show ref: set text(fill: colours.ref)
+
+  show link: set text(fill: colours.link)
   show link: underline
 
-  // colour terms
-  show regex("tb[a,c,d,u]"): set text(fill: red, style: "italic") // for to-be-[added/advised, confirmed, determined, updated]
+  // ------------------------------------------------------------
+  // Editorial markers
+  // ------------------------------------------------------------
 
-  // block quote properties
+  show regex("tb[acdu]"): set text(fill: red, style: "italic")
+
+  // ------------------------------------------------------------
+  // Quotes
+  // ------------------------------------------------------------
+
   set quote(block: true)
   show quote: set text(style: "italic")
 
-  // print title block (includes logo, title, subtitle, author, and date)
+  // ------------------------------------------------------------
+  // Title block
+  // ------------------------------------------------------------
+
   align(center)[
-    #if logo == "yes" {
-      image("logo.svg", height: 0.4in) // above the title
+    #if logo != none {
+      image("./logo.svg", height: 0.4in)
       v(3em, weak: true)
     }
+
     #text(1.8em)[*#title*]
+
     #if subtitle != none {
       v(1em, weak: true)
       text(1em)[_ #subtitle _]
     }
+
     #v(2em, weak: true)
-    #text(1em, author)
+
+    #text(1em)[#author]
+
     #v(1em, weak: true)
-    #datetime.today().display("[month repr:long] [day], [year]")
+
+    #text(1em)[
+      #datetime.today().display("[month repr:long] [day], [year]")
+    ]
+
     #v(5em, weak: true)
   ]
-  // // numbering headings
-  // set heading(numbering: "1.1") // set heading numbers here-on
 
-  //
+  // ------------------------------------------------------------
+  // Body
+  // ------------------------------------------------------------
+
   body
 }
 /*
 
-// import this template into, say, main.typ like so, and edit
-// details (e.g. paper, title, and author): as required:
+// for main.typ ->
 
 #import "template.typ": *
+
 #show: note.with(
   paper: "a5",
-  title: [A technical note],
+  logo: "logo.svg",
+  title: [A Technical Note],
+  subtitle: [A short subtitle],
   author: "C Kunte",
 )
-// content from here-on
+
+= Introduction
+
+Your content here-on.
 
 */
